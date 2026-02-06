@@ -16,6 +16,7 @@ bot.
 """
 
 import os
+from datetime import datetime
 import logging
 import SecretConstants
 
@@ -50,7 +51,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def download_and_save(directory_path: str, file_id: str, extension: str, context: ContextTypes.DEFAULT_TYPE):
     os.makedirs(directory_path, exist_ok=True)
     new_file = await context.bot.get_file(file_id)
-    await new_file.download_to_drive(directory_path + "/" + new_file.file_id + extension)
+    current_time_underscore = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    await new_file.download_to_drive(directory_path + "/" + current_time_underscore + "_" + new_file.file_id + extension)
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
