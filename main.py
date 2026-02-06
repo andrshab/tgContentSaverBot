@@ -53,7 +53,7 @@ async def download_and_save(directory_path: str, file_id: str, extension: str, c
     await new_file.download_to_drive(directory_path + "/" + new_file.file_id + extension)
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
     print("New event!")
     if update.message.photo is not None:
@@ -84,7 +84,7 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(~filters.COMMAND, echo))
+    application.add_handler(MessageHandler(~filters.COMMAND, handle_message))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
