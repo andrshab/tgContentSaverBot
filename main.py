@@ -51,8 +51,15 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
     print("New event!")
     if update.message.photo is not None:
-        print(update.message.photo)
-    # TODO receive media and save it
+        # save photo with max resolution to local disk 
+        max_size = 0
+        max_sized_file_id = ""
+        for item in update.message.photo:
+            if item.file_size > max_size:
+                max_size = item.file_size
+                max_sized_file_id = item.file_id
+        new_file = await context.bot.get_file(max_sized_file_id)
+        await new_file.download_to_drive(new_file.file_id + ".png")
     await update.message.reply_text("Saved!")
 
 
