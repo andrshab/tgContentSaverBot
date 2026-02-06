@@ -18,7 +18,7 @@ bot.
 import logging
 import SecretConstants
 
-from telegram import ForceReply, Update
+from telegram import ForceReply, Update, VideoNote
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 # Enable logging
@@ -46,6 +46,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     """Send a message when the command /help is issued."""
     await update.message.reply_text("Help!")
 
+async def download_and_save(directory_path: str, file_id: str, context: ContextTypes.DEFAULT_TYPE):
+    new_file = await context.bot.get_file(file_id)
+    await new_file.download_to_drive(new_file.file_id + ".png")
+
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
@@ -53,13 +57,18 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message.photo is not None:
         # save photo with max resolution to local disk 
         max_size = 0
-        max_sized_file_id = ""
+        file_id = ""
         for item in update.message.photo:
             if item.file_size > max_size:
                 max_size = item.file_size
-                max_sized_file_id = item.file_id
-        new_file = await context.bot.get_file(max_sized_file_id)
-        await new_file.download_to_drive(new_file.file_id + ".png")
+                file_id = item.file_id
+        if file_id:
+            await download_and_save(".", file_id, context)
+    if update.message.video_note is not None:
+        # save video_note (circle) 
+        file_id = update.message.video_note.file_id
+        if file_id:
+            await download_and_save(".", file_id, context)
     await update.message.reply_text("Saved!")
 
 
