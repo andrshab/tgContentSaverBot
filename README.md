@@ -2,7 +2,6 @@
 ```
 python3 -m venv save_bot_venv
 source save_bot_venv/bin/activate
-python3 -m pip install python-telegram-bot --upgrade 
 ```
 
 ### Create SecretConstants.py with such content
