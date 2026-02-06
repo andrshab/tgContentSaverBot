@@ -15,6 +15,7 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 
+import os
 import logging
 import SecretConstants
 
@@ -46,16 +47,17 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     """Send a message when the command /help is issued."""
     await update.message.reply_text("Help!")
 
-async def download_and_save(directory_path: str, file_id: str, context: ContextTypes.DEFAULT_TYPE):
+async def download_and_save(directory_path: str, file_id: str, extension: str, context: ContextTypes.DEFAULT_TYPE):
+    os.makedirs(directory_path, exist_ok=True)
     new_file = await context.bot.get_file(file_id)
-    await new_file.download_to_drive(new_file.file_id + ".png")
+    await new_file.download_to_drive(directory_path + "/" + new_file.file_id + extension)
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
     print("New event!")
     if update.message.photo is not None:
-        # save photo with max resolution to local disk 
+        # save photo with max resolution to local dir
         max_size = 0
         file_id = ""
         for item in update.message.photo:
@@ -63,12 +65,12 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 max_size = item.file_size
                 file_id = item.file_id
         if file_id:
-            await download_and_save(".", file_id, context)
+            await download_and_save("photos", file_id, ".png", context)
     if update.message.video_note is not None:
-        # save video_note (circle) 
+        # save video_note (circle) to local dir
         file_id = update.message.video_note.file_id
         if file_id:
-            await download_and_save(".", file_id, context)
+            await download_and_save("video_notes", file_id, ".mp4", context)
     await update.message.reply_text("Saved!")
 
 
